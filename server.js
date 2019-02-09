@@ -1,8 +1,17 @@
 var http = require('http');
 var express = require("express");
 var app = express();
+const exphbs = require('express-handlebars');
+const memoryFS = require('memory-fs');
+const webpack = require("webpack");
 
-app.get('/', function(request, response){
+// Register Handlebars view engine
+app.engine('handlebars', exphbs());
+// Use Handlebars view engine
+app.set('view engine', 'handlebars');
+
+
+app.get('/', function(req, res){
   const returnRandomFiles = ( numFilesToLoad ) => {
     const files = [1,2,3,4,5];
     const filesToLoad = [];
@@ -18,17 +27,24 @@ app.get('/', function(request, response){
   };
 
 
-  let entry = '';
+  let entryFiles = [];
   returnRandomFiles(3).forEach( index => {
-    entry+= `"./js/${index}.js" `;
+    entryFiles.push( `./js/${index}.js`);
   });
 
-  let command = 'npm run build -- ' + entry;
-
-  const exec = require('child_process').exec;
-  exec(command, ()=> {
-    response.sendfile('dist/index.html');
+  const webpackCompiler = webpack({
+    entry: entryFiles
   });
+  const fs = new memoryFS();
+  webpackCompiler.outputFileSystem = fs;
+
+  webpackCompiler.run((err, stats)=> {
+    const compiledCode = webpackCompiler.outputFileSystem.data.Users.snash.workspace.test.dist['main.js'].toString();
+    res.render('index', {
+      compiledCode
+    });
+  });
+
 });
 
 var server = http.createServer(app);

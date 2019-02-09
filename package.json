@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.0"
   },
   "devDependencies": {
     "html-webpack-inline-source-plugin": "^1.0.0-beta.2",
