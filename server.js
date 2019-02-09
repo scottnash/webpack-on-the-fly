@@ -27,7 +27,6 @@ app.get('/', function(request, response){
 
   const exec = require('child_process').exec;
   exec(command, ()=> {
-    console.log(entry);
     response.sendfile('dist/index.html');
   });
 });
